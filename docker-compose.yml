@@ -1,0 +1,33 @@
+services:
+  customer-service:
+    build: ./customer-service
+    container_name: customer-service
+    ports:
+      - '8091:8091'
+    expose:
+      - '8091'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8091/actuator/health" ]
+      interval: 10s
+      retries: 3
+  account-service:
+    build: ./account-service
+    container_name: account-service
+    ports:
+      - '8092:8092'
+    expose:
+      - '8092'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8092/actuator/health" ]
+      interval: 10s
+      retries: 3
+    depends_on:
+      customer-service:
+        condition: service_healthy
+  front-end-angular:
+    build: ./angular-front-end
+    container_name: front-end-angular
+    ports:
+      - '80:80'
+    expose:
+      - '80'
